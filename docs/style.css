@@ -6,7 +6,9 @@ body { margin:0; background:var(--paper); color:var(--ink); font:1rem/1.65 syste
 .shell { width:min(100% - 6rem,77rem); margin-inline:auto; }
 .site-header { display:flex; align-items:center; justify-content:space-between; gap:1.5rem; padding-block:1.7rem; border-bottom:1px solid var(--line); }
 .brand { display:inline-flex; align-items:center; gap:.6rem; font:700 1.75rem/1.2 Georgia,'Times New Roman',serif; text-decoration:none; color:var(--ink); }
+.site-brand { min-inline-size:0; }
 .brand { max-inline-size:100%; min-inline-size:0; }
+.brand-subtitle { max-width:48ch; margin-top:.35rem; color:var(--muted); font-size:.9rem; line-height:1.5; overflow-wrap:anywhere; }
 .brand span { min-inline-size:0; overflow-wrap:anywhere; }
 .brand svg { flex-shrink:0; }
 nav { display:flex; flex-wrap:wrap; gap:clamp(.8rem,2vw,2rem); font-size:.95rem; }

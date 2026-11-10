@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <meta name="referrer" content="no-referrer">
-  <meta name="description" content="MeshDraw. Статус регистрации и проверка опубликованного результата конкурса.">
+  <meta name="description" content="MeshDraw. Проверяемые розыгрыши на основе радиоданных сети MeshCore.">
   <title>MeshDraw</title>
   <link rel="stylesheet" href="./style.css">
   <script type="module" src="./app.mjs"></script>
@@ -14,10 +14,13 @@
 <body>
   <a class="skip-link" href="#verification">К проверке результата</a>
   <header class="site-header shell">
-    <a class="brand" href="#main" aria-label="MeshDraw — к началу страницы">
-      <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M16 6v20M8 11l8-5 8 5M8 21l8 5 8-5M8 11v10m16-10v10M8 11l16 10M24 11 8 21"/><circle cx="16" cy="16" r="3" fill="currentColor" stroke="none"/></svg>
-      <span>Mesh<wbr>Draw</span>
-    </a>
+    <div class="site-brand">
+      <a class="brand" href="#main" aria-label="MeshDraw — к началу страницы">
+        <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M16 6v20M8 11l8-5 8 5M8 21l8 5 8-5M8 11v10m16-10v10M8 11l16 10M24 11 8 21"/><circle cx="16" cy="16" r="3" fill="currentColor" stroke="none"/></svg>
+        <span>Mesh<wbr>Draw</span>
+      </a>
+      <p class="brand-subtitle">Проверяемые розыгрыши на основе радиоданных сети MeshCore</p>
+    </div>
     <nav aria-label="По странице"><a id="rules-link" href="#rules-section" hidden>Условия</a><a id="tickets-link" href="#tickets-section" hidden>Билеты</a><a href="#verification">Проверка результата</a></nav>
   </header>
   <main id="main" class="shell" aria-busy="true">
@@ -94,6 +97,6 @@
     </section>
     <noscript><p class="error">Включите JavaScript, чтобы увидеть состояние конкурса и воспользоваться пересчётом.</p></noscript>
   </main>
-  <footer class="site-footer shell"><span class="footer-brand">MeshDraw</span><p>Проверка розыгрышей по опубликованным данным.</p><a href="#main">К началу страницы ↑</a></footer>
+  <footer class="site-footer shell"><span class="footer-brand">Проект Vox</span><a href="https://github.com/VoxMesh/meshdraw" rel="noreferrer">Исходный код на GitHub</a><a href="#main">К началу страницы ↑</a></footer>
 </body>
 </html>
