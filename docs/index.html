@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="meshdraw-ui-contract" content="meshdraw-web-v3">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Демонстрация MeshDraw и проверка сохранённого учебного результата.">
+  <title>MeshDraw</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#verification">К пересчёту</a>
+  <header class="site-header shell">
+    <a class="brand" href="#main" aria-label="MeshDraw — к началу страницы">
+      <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M16 6v20M8 11l8-5 8 5M8 21l8 5 8-5M8 11v10m16-10v10M8 11l16 10M24 11 8 21"/><circle cx="16" cy="16" r="3" fill="currentColor" stroke="none"/></svg>
+      MeshDraw
+    </a>
+    <nav aria-label="По странице"><a href="#rules-section">Условия</a><a href="#tickets-section">Билеты</a><a href="#verification">Проверка</a></nav>
+  </header>
+  <main id="main" class="shell" aria-busy="true">
+    <p id="synthetic-banner" class="synthetic" hidden><strong>Демонстрация. Регистрация ещё не открыта.</strong> Данные учебные (SYNTHETIC).</p>
+    <div class="contest-overview">
+      <section class="contest-intro" aria-labelledby="contest-title">
+        <h1 id="contest-title">Конкурс MeshDraw</h1>
+        <p id="prize" class="prize" hidden></p>
+        <p id="contest-state" class="status" role="status" data-tone="loading">Загружаем конкурс…</p>
+        <dl class="dates">
+          <div><dt>Начало приёма</dt><dd id="opens-at">—</dd></div>
+          <div><dt>Приём до <span class="muted">(не включая границу)</span></dt><dd id="cutoff-at">—</dd></div>
+        </dl>
+        <p class="snapshot-note">Здесь опубликован подготовленный список и сохранённое состояние конкурса.</p>
+      </section>
+      <section id="result-panel" class="result-panel" aria-labelledby="result-heading" data-result="loading">
+        <h2 id="result-heading">Результат розыгрыша</h2>
+        <p id="winner-label" class="winner-label">Сохранённый результат</p>
+        <p id="saved-result" class="winner" aria-live="polite">—</p>
+        <p id="result-note" class="result-note">Результат пока не загружен.</p>
+        <a class="result-link" href="#verification">Проверить расчёт <span aria-hidden="true">→</span></a>
+      </section>
+    </div>
+    <div class="contest-content">
+      <section id="rules-section" class="rules-section" aria-labelledby="rules-heading">
+        <h2 id="rules-heading">Условия участия</h2><p id="rules" class="rules">Условия пока не загружены.</p>
+      </section>
+      <section id="tickets-section" class="tickets-section" aria-labelledby="tickets-heading">
+        <h2 id="tickets-heading">Билеты <span id="ticket-count" class="ticket-count">—</span></h2>
+        <p class="muted">Один билет на аккаунт. Повторный комментарий сохраняет прежний номер.</p>
+        <p id="no-tickets" class="muted">Список пока не загружен.</p>
+        <details id="ticket-details"><summary>Посмотреть номера билетов</summary><ul id="tickets" class="tickets" tabindex="0" aria-label="Опубликованные номера билетов"></ul></details>
+      </section>
+    </div>
+    <section id="verification" class="verification" aria-labelledby="verification-heading">
+      <div class="verification-intro">
+        <h2 id="verification-heading">Проверьте результат сами</h2>
+        <p>Кнопка повторит расчёт в вашем браузере по опубликованным данным и сравнит его с сохранённым результатом.</p>
+        <p id="verification-note" class="muted">Новые радиоданные не запрашиваются. Новая жеребьёвка не проводится.</p>
+      </div>
+      <div class="verification-action">
+        <button id="recalculate" type="button" disabled aria-describedby="verification-note">Пересчитать</button>
+        <p id="verification-status" class="verification-status" role="status" aria-live="polite" aria-atomic="true">Проверка ещё не выполнена.</p>
+      </div>
+      <p id="source-provenance" class="provenance"><strong>Происхождение радиоданных независимо не подтверждено.</strong> Совпадение расчёта этого не доказывает.</p>
+      <details id="calculation-details" class="technical-details">
+        <summary>Технические подробности</summary>
+        <div class="technical-body">
+          <p class="muted">Архивный профиль archive-input-v1: отбор записей, квантование RSSI/SNR, DEDUP_HASH, RF-байты, SHA-256 и отображение на билеты. Вычислитель использует точную арифметику.</p>
+          <section id="archive-section" hidden aria-labelledby="archive-heading">
+            <h3 id="archive-heading">Зафиксированный план</h3>
+            <dl class="archive-plan">
+              <div><dt>Архивный интервал</dt><dd id="archive-window">—</dd></div>
+              <div><dt>Основное чтение</dt><dd id="archive-read-at">—</dd></div>
+              <div><dt>Контрольная сумма плана</dt><dd><code id="plan-hash">—</code></dd></div>
+            </dl>
+          </section>
+          <p id="steps-note" class="muted">После пересчёта здесь появятся выбранные записи, RF-байты, хеш и индекс билета.</p>
+          <pre id="calculation-output" hidden tabindex="0" aria-label="Шаги и значения пересчёта"></pre>
+          <div class="downloads">
+            <p id="package-download" hidden><a href="./verification.json" download>Скачать проверочный пакет (JSON)</a></p>
+            <p><a href="./result.json" download>Скачать состояние конкурса (JSON)</a></p>
+          </div>
+          <p class="muted">Пакет — подготовленная проекция сохранённых данных с техническими псевдонимами. Соответствие исходному архиву независимо не подтверждено. Организатор и источник считаются доверенными; криптографическая случайность и защита от злонамеренного организатора не заявляются.</p>
+        </div>
+      </details>
+    </section>
+    <noscript><p class="error">Для просмотра и пересчёта нужен JavaScript. Состояние конкурса и проверочный пакет можно скачать по ссылкам в технических подробностях и проверить отдельно.</p></noscript>
+  </main>
+  <footer class="site-footer shell"><span class="footer-brand">MeshDraw</span><p>Один сохранённый результат. Возможность проверить расчёт.</p><a href="#main">К началу страницы ↑</a></footer>
+</body>
+</html>
