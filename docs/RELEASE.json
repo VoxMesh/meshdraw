@@ -3,7 +3,7 @@
   "application_version": "pilot-1000-v1",
   "archive_profile": "archive-input-v1",
   "schema_version": "meshdraw-public-release-v2",
-  "source_mode": "SYNTHETIC",
+  "source_mode": "NO_CONTEST",
   "state_format": "meshdraw-public-state-v2",
   "ui_contract": "meshdraw-web-v3",
   "verification_format": "meshdraw-public-verification-v1"

@@ -6,11 +6,17 @@ body { margin:0; background:var(--paper); color:var(--ink); font:1rem/1.65 syste
 .shell { width:min(100% - 6rem,77rem); margin-inline:auto; }
 .site-header { display:flex; align-items:center; justify-content:space-between; gap:1.5rem; padding-block:1.7rem; border-bottom:1px solid var(--line); }
 .brand { display:inline-flex; align-items:center; gap:.6rem; font:700 1.75rem/1.2 Georgia,'Times New Roman',serif; text-decoration:none; color:var(--ink); }
+.brand { max-inline-size:100%; min-inline-size:0; }
+.brand span { min-inline-size:0; overflow-wrap:anywhere; }
 .brand svg { flex-shrink:0; }
 nav { display:flex; flex-wrap:wrap; gap:clamp(.8rem,2vw,2rem); font-size:.95rem; }
-nav a { text-decoration:none; color:var(--muted); padding-block:.5rem; }
+nav a { display:inline-flex; align-items:center; min-height:44px; text-decoration:none; color:var(--muted); padding-block:.5rem; }
 nav a:hover { text-decoration:underline; }
 main { padding-block:2rem 1rem; }
+.prelaunch { padding-block:clamp(2rem,6vw,5.5rem) clamp(2.5rem,6vw,5.5rem); }
+.prelaunch h1 { max-width:20ch; }
+.prelaunch p { max-width:48ch; margin-top:1.25rem; color:var(--muted); font-size:1.05rem; }
+.prelaunch:not([hidden]) ~ .verification { max-width:56rem; grid-template-columns:minmax(0,1fr); }
 h1,h2,h3,p { margin:0; }
 h1,h2,h3 { overflow-wrap:anywhere; text-wrap:balance; }
 h1 { font:500 clamp(2.25rem,4.4vw,3.75rem)/1.1 Georgia,'Times New Roman',serif; letter-spacing:-.03em; max-width:19ch; }

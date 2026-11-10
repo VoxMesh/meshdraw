@@ -10,7 +10,7 @@ from meshdraw_public.verifier import verify_package
 
 ROOT = Path(__file__).resolve().parents[1]
 VECTORS = read(ROOT / "tests/fixtures/synthetic/browser-vectors.json")
-PACKAGE = read(ROOT / "docs/verification.json")
+PACKAGE = read(ROOT / "tests/fixtures/synthetic/verification.json")
 
 
 class PublicReplayTests(unittest.TestCase):
@@ -35,7 +35,7 @@ class PublicReplayTests(unittest.TestCase):
                 self.assertEqual(value, vector["expected"])
 
     def test_demo_binding_and_repeat(self):
-        state = read(ROOT / "docs/result.json")["state"]
+        state = read(ROOT / "tests/fixtures/synthetic/result.json")["state"]
         self.assertIs(state["synthetic"], True)
         self.assertEqual(PACKAGE["mode"], "SYNTHETIC")
         self.assertEqual(PACKAGE["policy"]["tickets"], state["tickets"])

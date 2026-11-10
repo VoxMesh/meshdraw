@@ -6,64 +6,71 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <meta name="referrer" content="no-referrer">
-  <meta name="description" content="Демонстрация MeshDraw и проверка сохранённого учебного результата.">
+  <meta name="description" content="MeshDraw. Статус регистрации и проверка опубликованного результата конкурса.">
   <title>MeshDraw</title>
   <link rel="stylesheet" href="./style.css">
   <script type="module" src="./app.mjs"></script>
 </head>
 <body>
-  <a class="skip-link" href="#verification">К пересчёту</a>
+  <a class="skip-link" href="#verification">К проверке результата</a>
   <header class="site-header shell">
     <a class="brand" href="#main" aria-label="MeshDraw — к началу страницы">
       <svg viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M16 6v20M8 11l8-5 8 5M8 21l8 5 8-5M8 11v10m16-10v10M8 11l16 10M24 11 8 21"/><circle cx="16" cy="16" r="3" fill="currentColor" stroke="none"/></svg>
-      MeshDraw
+      <span>Mesh<wbr>Draw</span>
     </a>
-    <nav aria-label="По странице"><a href="#rules-section">Условия</a><a href="#tickets-section">Билеты</a><a href="#verification">Проверка</a></nav>
+    <nav aria-label="По странице"><a id="rules-link" href="#rules-section" hidden>Условия</a><a id="tickets-link" href="#tickets-section" hidden>Билеты</a><a href="#verification">Проверка результата</a></nav>
   </header>
   <main id="main" class="shell" aria-busy="true">
-    <p id="synthetic-banner" class="synthetic" hidden><strong>Демонстрация. Регистрация ещё не открыта.</strong> Данные учебные (SYNTHETIC).</p>
-    <div class="contest-overview">
-      <section class="contest-intro" aria-labelledby="contest-title">
-        <h1 id="contest-title">Конкурс MeshDraw</h1>
-        <p id="prize" class="prize" hidden></p>
-        <p id="contest-state" class="status" role="status" data-tone="loading">Загружаем конкурс…</p>
-        <dl class="dates">
-          <div><dt>Начало приёма</dt><dd id="opens-at">—</dd></div>
-          <div><dt>Приём до <span class="muted">(не включая границу)</span></dt><dd id="cutoff-at">—</dd></div>
-        </dl>
-        <p class="snapshot-note">Здесь опубликован подготовленный список и сохранённое состояние конкурса.</p>
-      </section>
-      <section id="result-panel" class="result-panel" aria-labelledby="result-heading" data-result="loading">
-        <h2 id="result-heading">Результат розыгрыша</h2>
-        <p id="winner-label" class="winner-label">Сохранённый результат</p>
-        <p id="saved-result" class="winner" aria-live="polite">—</p>
-        <p id="result-note" class="result-note">Результат пока не загружен.</p>
-        <a class="result-link" href="#verification">Проверить расчёт <span aria-hidden="true">→</span></a>
-      </section>
-    </div>
-    <div class="contest-content">
-      <section id="rules-section" class="rules-section" aria-labelledby="rules-heading">
-        <h2 id="rules-heading">Условия участия</h2><p id="rules" class="rules">Условия пока не загружены.</p>
-      </section>
-      <section id="tickets-section" class="tickets-section" aria-labelledby="tickets-heading">
-        <h2 id="tickets-heading">Билеты <span id="ticket-count" class="ticket-count">—</span></h2>
-        <p class="muted">Один билет на аккаунт. Повторный комментарий сохраняет прежний номер.</p>
-        <p id="no-tickets" class="muted">Список пока не загружен.</p>
-        <details id="ticket-details"><summary>Посмотреть номера билетов</summary><ul id="tickets" class="tickets" tabindex="0" aria-label="Опубликованные номера билетов"></ul></details>
-      </section>
+    <p id="state-feedback" class="status" role="status" data-tone="loading">Загружаем состояние конкурса…</p>
+    <section id="prelaunch" class="prelaunch" aria-labelledby="prelaunch-heading" hidden>
+      <h1 id="prelaunch-heading">Регистрация ещё не открыта</h1>
+      <p>Условия участия и сроки появятся здесь перед открытием конкурса MeshDraw.</p>
+    </section>
+    <div id="contest-view" hidden>
+      <p id="synthetic-banner" class="synthetic" hidden><strong>Демонстрация. Регистрация ещё не открыта.</strong> Данные учебные (SYNTHETIC).</p>
+      <div class="contest-overview">
+        <section class="contest-intro" aria-labelledby="contest-title">
+          <h1 id="contest-title">Конкурс MeshDraw</h1>
+          <p id="prize" class="prize" hidden></p>
+          <p id="contest-state" class="status" role="status" data-tone="loading">Загружаем конкурс…</p>
+          <dl class="dates">
+            <div><dt>Начало приёма</dt><dd id="opens-at">—</dd></div>
+            <div><dt>Приём до <span class="muted">(не включая границу)</span></dt><dd id="cutoff-at">—</dd></div>
+          </dl>
+          <p class="snapshot-note">Здесь опубликован подготовленный список и сохранённое состояние конкурса.</p>
+        </section>
+        <section id="result-panel" class="result-panel" aria-labelledby="result-heading" data-result="loading">
+          <h2 id="result-heading">Результат розыгрыша</h2>
+          <p id="winner-label" class="winner-label">Сохранённый результат</p>
+          <p id="saved-result" class="winner" aria-live="polite" hidden></p>
+          <p id="result-note" class="result-note">Результат пока не загружен.</p>
+          <a class="result-link" href="#verification">Проверить расчёт <span aria-hidden="true">→</span></a>
+        </section>
+      </div>
+      <div class="contest-content">
+        <section id="rules-section" class="rules-section" aria-labelledby="rules-heading">
+          <h2 id="rules-heading">Условия участия</h2><p id="rules" class="rules">Условия пока не загружены.</p>
+        </section>
+        <section id="tickets-section" class="tickets-section" aria-labelledby="tickets-heading">
+          <h2 id="tickets-heading">Билеты <span id="ticket-count" class="ticket-count">—</span></h2>
+          <p class="muted">Один билет на аккаунт. Повторный комментарий сохраняет прежний номер.</p>
+          <p id="no-tickets" class="muted">Список пока не загружен.</p>
+          <details id="ticket-details"><summary>Посмотреть номера билетов</summary><ul id="tickets" class="tickets" tabindex="0" aria-label="Опубликованные номера билетов"></ul></details>
+        </section>
+      </div>
     </div>
     <section id="verification" class="verification" aria-labelledby="verification-heading">
       <div class="verification-intro">
-        <h2 id="verification-heading">Проверьте результат сами</h2>
-        <p>Кнопка повторит расчёт в вашем браузере по опубликованным данным и сравнит его с сохранённым результатом.</p>
+        <h2 id="verification-heading">Проверка результата</h2>
+        <p>После публикации результата здесь можно будет пересчитать билет по проверочному пакету. Браузер повторит расчёт и сравнит его с сохранённым результатом.</p>
         <p id="verification-note" class="muted">Новые радиоданные не запрашиваются. Новая жеребьёвка не проводится.</p>
       </div>
-      <div class="verification-action">
+      <div id="verification-action" class="verification-action" hidden>
         <button id="recalculate" type="button" disabled aria-describedby="verification-note">Пересчитать</button>
         <p id="verification-status" class="verification-status" role="status" aria-live="polite" aria-atomic="true">Проверка ещё не выполнена.</p>
       </div>
       <p id="source-provenance" class="provenance"><strong>Происхождение радиоданных независимо не подтверждено.</strong> Совпадение расчёта этого не доказывает.</p>
-      <details id="calculation-details" class="technical-details">
+      <details id="calculation-details" class="technical-details" hidden>
         <summary>Технические подробности</summary>
         <div class="technical-body">
           <p class="muted">Архивный профиль archive-input-v1: отбор записей, квантование RSSI/SNR, DEDUP_HASH, RF-байты, SHA-256 и отображение на билеты. Вычислитель использует точную арифметику.</p>
@@ -85,8 +92,8 @@
         </div>
       </details>
     </section>
-    <noscript><p class="error">Для просмотра и пересчёта нужен JavaScript. Состояние конкурса и проверочный пакет можно скачать по ссылкам в технических подробностях и проверить отдельно.</p></noscript>
+    <noscript><p class="error">Включите JavaScript, чтобы увидеть состояние конкурса и воспользоваться пересчётом.</p></noscript>
   </main>
-  <footer class="site-footer shell"><span class="footer-brand">MeshDraw</span><p>Один сохранённый результат. Возможность проверить расчёт.</p><a href="#main">К началу страницы ↑</a></footer>
+  <footer class="site-footer shell"><span class="footer-brand">MeshDraw</span><p>Проверка розыгрышей по опубликованным данным.</p><a href="#main">К началу страницы ↑</a></footer>
 </body>
 </html>

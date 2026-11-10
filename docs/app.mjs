@@ -45,6 +45,7 @@ function validateView(value) {
       || value.tickets.some((ticket) => typeof ticket !== 'string' || ticket.length < 1
         || ticket.length > 32 || /[^0-9]/.test(ticket))
       || new Set(value.tickets.map((ticket) => BigInt(ticket).toString())).size !== value.tickets.length
+      || (value.phase === 'DRAWN') !== (value.winner !== null)
       || (value.winner !== null && !value.tickets.includes(value.winner))) {
     throw new Error('PUBLIC_STATE_INVALID');
   }
@@ -57,6 +58,11 @@ function validateView(value) {
 }
 
 function displayView(value) {
+  byId('contest-view').hidden = false;
+  byId('rules-link').hidden = false;
+  byId('tickets-link').hidden = false;
+  byId('calculation-details').hidden = false;
+  byId('verification-action').hidden = false;
   document.title = value.title;
   byId('contest-title').textContent = value.title;
   const now = Date.now();
@@ -67,18 +73,7 @@ function displayView(value) {
   byId('synthetic-banner').hidden = !value.synthetic;
   byId('prize').textContent = `Приз: ${value.prize}`;
   byId('prize').hidden = value.synthetic || !value.prize;
-  const drawn = value.winner !== null;
-  byId('result-panel').dataset.result = drawn ? 'available' : 'empty';
-  byId('winner-label').textContent = drawn
-    ? (value.synthetic ? 'Учебный билет' : 'Билет победителя')
-    : 'Победитель ещё не объявлен';
-  byId('saved-result').textContent = drawn ? `№${value.winner}` : 'Ожидаем результат';
-  byId('result-note').textContent = drawn
-    ? (value.synthetic
-      ? 'Учебный результат по синтетическому пакету.'
-      : 'Это сохранённый результат. Его можно проверить по опубликованному пакету.')
-    : value.phase === 'DRAW_FAILED' ? 'Расчёт не завершён. Дальнейшие действия сообщит организатор.'
-      : 'Сохранённый результат появится после завершения приёма и расчёта.';
+  displayResult(value);
   byId('rules').textContent = value.rules_text;
   const utc = text => new Intl.DateTimeFormat('ru-RU', {timeZone:'UTC',dateStyle:'long',timeStyle:'medium'}).format(new Date(text)) + ' (UTC)';
   byId('opens-at').textContent = value.synthetic ? 'Не объявлено' : utc(value.opens_at);
@@ -90,7 +85,6 @@ function displayView(value) {
   for (const ticket of value.tickets) {
     const item = document.createElement('li');
     item.textContent = ticket;
-    if (ticket === value.winner) item.dataset.winner = 'true';
     tickets.append(item);
   }
   byId('tickets').replaceChildren(tickets);
@@ -99,6 +93,24 @@ function displayView(value) {
     byId('archive-window').textContent = `${utc(value.archive_plan.start)} — ${utc(value.archive_plan.end)}`;
     byId('archive-read-at').textContent = utc(value.archive_plan.read_at);
     byId('plan-hash').textContent = value.plan_sha256 || 'Не опубликована';
+  }
+}
+
+function displayResult(value, verified = false) {
+  const drawn = verified && value.winner !== null;
+  byId('result-panel').dataset.result = drawn ? 'available' : 'empty';
+  byId('winner-label').hidden = !drawn;
+  byId('winner-label').textContent = value.synthetic ? 'Учебный билет' : 'Билет победителя';
+  byId('saved-result').hidden = !drawn;
+  byId('saved-result').textContent = drawn ? '№' + value.winner : '';
+  byId('result-note').textContent = drawn
+    ? 'Расчёт по опубликованному пакету совпал.'
+    : value.winner !== null ? 'Пересчитайте опубликованный пакет, чтобы увидеть билет.'
+      : value.phase === 'DRAW_FAILED' ? 'Расчёт не завершён. Дальнейшие действия сообщит организатор.'
+        : 'Результат ещё не опубликован.';
+  for (const item of byId('tickets').children) {
+    if (drawn && item.textContent === value.winner) item.dataset.winner = 'true';
+    else delete item.dataset.winner;
   }
 }
 
@@ -143,12 +155,14 @@ byId('recalculate').addEventListener('click', async () => {
     }
     if (result.status !== 'MATCH') throw new Error('CALCULATION_MISMATCH');
     checkContestBinding(verificationPackage, result);
+    displayResult(savedState, true);
     byId('calculation-output').textContent = detailsFor(result);
     byId('calculation-output').hidden = false;
     byId('steps-note').hidden = true;
     const label = savedState.synthetic ? 'Учебный билет' : 'Победитель — билет';
     status(`Расчёт совпал. ${label} №${result.calculation.mapping.ticket}.`, 'match');
   } catch {
+    if (savedState) displayResult(savedState);
     status('Расчёт не подтверждён: пакет повреждён, отличается от опубликованного результата или не поддерживается. Скачайте пакет и обратитесь к организатору.', 'error');
   } finally {
     button.disabled = false;
@@ -170,27 +184,35 @@ async function load() {
         || envelope.schema_version !== STATE_FORMAT || envelope.ui_contract !== UI_CONTRACT) {
       throw new Error('INCOMPATIBLE_RELEASE_FILES');
     }
+    if (metadata.source_mode === 'NO_CONTEST' && envelope.state === null) {
+      byId('prelaunch').hidden = false;
+      byId('state-feedback').hidden = true;
+      return;
+    }
     savedState = validateView(envelope.state);
     if (metadata.source_mode !== (savedState.synthetic ? 'SYNTHETIC' : 'REVIEWED_PROJECTION')) {
       throw new Error('INCOMPATIBLE_RELEASE_MODE');
     }
     displayView(savedState);
-    byId('main')?.setAttribute('aria-busy', 'false');
+    byId('state-feedback').hidden = true;
   } catch {
-    byId('contest-state').textContent = 'Публичное состояние конкурса недоступно.';
-    byId('contest-state').dataset.tone = 'error';
-    if (byId('result-panel')) byId('result-panel').dataset.result = 'error';
-    byId('saved-result').textContent = 'Не загружен';
-    if (byId('result-note')) byId('result-note').textContent = 'Не удалось загрузить конкурс. Обновите страницу или обратитесь к организатору.';
-    byId('no-tickets').textContent = 'Список не загружен.';
+    const feedback = byId('state-feedback') ?? byId('contest-state');
+    feedback.textContent = 'Состояние конкурса недоступно. Обновите страницу.';
+    feedback.dataset.tone = 'error';
+    byId('verification-action')?.removeAttribute('hidden');
+    status('Комплект недоступен, повреждён или содержит несовместимые версии файлов.', 'error');
+    return;
+  } finally {
     byId('main')?.setAttribute('aria-busy', 'false');
-    status('Комплект недоступен, повреждён или содержит несовместимые версии файлов. Откройте страницу по HTTPS или через локальный HTTP-сервер и проверьте комплект целиком.', 'error');
+  }
+  if (savedState.winner === null) {
+    status('Пересчёт станет доступен после публикации результата.');
     return;
   }
   try {
     verificationPackage = await readPrepared('verification.json', true);
-    if (!verificationPackage || savedState.winner === null) {
-      status('Проверочный пакет результата пока не опубликован. Пересчёт станет доступен после сохранения и подготовки результата.');
+    if (!verificationPackage) {
+      status('Проверочный пакет пока не опубликован.');
       return;
     }
     if (!globalThis.crypto?.subtle || typeof BigInt !== 'function') throw new Error('BROWSER_UNSUPPORTED');
